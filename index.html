@@ -1818,10 +1818,20 @@
       /* ---------- Exportar PDF ---------- */
       // Usa la impresión del navegador: el usuario elige "Guardar como PDF"
       function exportPdf() {
-        const date = new Date().toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
-        document.getElementById("printDate").textContent = `Exportado el ${date}`;
         window.print();
       }
+
+      // El navegador usa el título de la pestaña como nombre del PDF
+      let titleBeforePrint = "";
+      window.addEventListener("beforeprint", () => {
+        const date = new Date().toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+        document.getElementById("printDate").textContent = `Exportado el ${date}`;
+        titleBeforePrint = document.title;
+        document.title = "Goals";
+      });
+      window.addEventListener("afterprint", () => {
+        document.title = titleBeforePrint;
+      });
 
       /* ---------- Filtros y título ---------- */
       document.getElementById("filters").addEventListener("click", (e) => {
