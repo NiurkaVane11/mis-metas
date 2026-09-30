@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mis metas</title>
+    <title>Goals</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="theme-color" content="#2383e2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -188,6 +191,36 @@
         font-size: 22px;
         font-weight: 600;
         z-index: 1;
+      }
+
+      .cover-wrap {
+        position: relative;
+      }
+
+      /* Marca: sobre la portada, arriba a la izquierda */
+      .brand {
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        z-index: 4;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 10px 5px 6px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.88);
+        color: #1f1f1e;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        pointer-events: none;
+      }
+
+      .brand img {
+        border-radius: 5px;
+        display: block;
       }
 
       .cover-actions {
@@ -1051,6 +1084,9 @@
         .cover:has(.cover-empty) {
           display: none;
         }
+        .cover-wrap:has(.cover-empty) .brand {
+          display: none;
+        }
         .cover-actions,
         .subtle-btn,
         .toolbar-right,
@@ -1158,7 +1194,10 @@
   </head>
   <body>
     <!-- Portada: vision board -->
-    <div class="cover" id="cover"></div>
+    <div class="cover-wrap">
+      <div class="brand" aria-label="Goals"><img src="icon.svg" alt="" width="20" height="20" />Goals</div>
+      <div class="cover" id="cover"></div>
+    </div>
 
     <div class="page">
       <header class="page-head">
@@ -1685,7 +1724,7 @@
         const titleEl = document.getElementById("title");
         const title = data.profile?.title || defaultTitle();
         if (document.activeElement !== titleEl) titleEl.textContent = title;
-        document.title = title;
+        document.title = `${title} · Goals`;
 
         const st = stats(data.goals);
         const late = data.goals.filter(isLate).length;

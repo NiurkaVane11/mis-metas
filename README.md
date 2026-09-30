@@ -1,10 +1,10 @@
-# Mis metas
+# <img src="icon.svg" width="32" height="32" alt="" align="top" /> Goals
 
 Página para organizar tus metas del año por secciones, marcar las que cumples y armar tu vision board. Tiene un estilo limpio, inspirado en Notion.
 
 **Pruébala aquí:** https://niurkavane11.github.io/mis-metas/
 
-![Captura de la interfaz de Mis metas](docs/captura.png)
+![Captura de la interfaz de Goals](docs/captura.png)
 
 ## Qué puedes hacer
 
