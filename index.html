@@ -1724,7 +1724,6 @@
         const titleEl = document.getElementById("title");
         const title = data.profile?.title || defaultTitle();
         if (document.activeElement !== titleEl) titleEl.textContent = title;
-        document.title = `${title} · Goals`;
 
         const st = stats(data.goals);
         const late = data.goals.filter(isLate).length;
@@ -1821,16 +1820,10 @@
         window.print();
       }
 
-      // El navegador usa el título de la pestaña como nombre del PDF
-      let titleBeforePrint = "";
+      // El PDF toma su nombre del título de la pestaña: siempre "Goals"
       window.addEventListener("beforeprint", () => {
         const date = new Date().toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
         document.getElementById("printDate").textContent = `Exportado el ${date}`;
-        titleBeforePrint = document.title;
-        document.title = "Goals";
-      });
-      window.addEventListener("afterprint", () => {
-        document.title = titleBeforePrint;
       });
 
       /* ---------- Filtros y título ---------- */
