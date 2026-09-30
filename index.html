@@ -1,0 +1,1728 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis metas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --text: #1f1f1e;
+        --muted: #6b6a66;
+        --faint: #a3a29e;
+        --bg: #ffffff;
+        --bg-soft: #f7f7f5;
+        --hover: rgba(55, 53, 47, 0.07);
+        --border: rgba(55, 53, 47, 0.1);
+        --card: #ffffff;
+        --card-shadow: rgba(15, 15, 15, 0.08) 0 0 0 1px, rgba(15, 15, 15, 0.06) 0 2px 4px;
+        --primary: #2383e2;
+        --primary-hover: #1b72c9;
+        --red: #d44c47;
+        --green: #448361;
+        --modal-shadow: rgba(15, 15, 15, 0.05) 0 0 0 1px, rgba(15, 15, 15, 0.1) 0 3px 6px, rgba(15, 15, 15, 0.2) 0 9px 24px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: rgba(255, 255, 255, 0.87);
+          --muted: rgba(255, 255, 255, 0.58);
+          --faint: rgba(255, 255, 255, 0.36);
+          --bg: #191919;
+          --bg-soft: #202020;
+          --hover: rgba(255, 255, 255, 0.06);
+          --border: rgba(255, 255, 255, 0.1);
+          --card: #252525;
+          --card-shadow: rgba(255, 255, 255, 0.09) 0 0 0 1px, rgba(0, 0, 0, 0.2) 0 2px 4px;
+          --modal-shadow: rgba(255, 255, 255, 0.09) 0 0 0 1px, rgba(0, 0, 0, 0.4) 0 9px 24px;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 15px;
+        line-height: 1.5;
+        min-height: 100vh;
+        padding-bottom: 5rem;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        color: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      svg.i {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+
+      /* ---------- Portada: vision board ---------- */
+      .cover {
+        position: relative;
+        height: 300px;
+        background: var(--bg-soft);
+        overflow: hidden;
+      }
+
+      .collage {
+        display: grid;
+        gap: 3px;
+        height: 100%;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+      }
+
+      .collage[data-n="4"] {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .collage[data-n="5"],
+      .collage[data-n="6"] {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 1fr 1fr;
+      }
+
+      .collage[data-n="5"] .shot:first-child {
+        grid-row: span 2;
+      }
+
+      .shot {
+        position: relative;
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .shot::after {
+        content: "";
+        position: absolute;
+        inset: 50% 0 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+        pointer-events: none;
+      }
+
+      .shot figcaption {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 12px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.3;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        z-index: 1;
+      }
+
+      .shot.more {
+        border: none;
+        padding: 0;
+      }
+
+      .shot.more span {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 22px;
+        font-weight: 600;
+        z-index: 1;
+      }
+
+      .cover-actions {
+        position: absolute;
+        right: 14px;
+        top: 14px;
+        display: flex;
+        gap: 6px;
+        z-index: 2;
+      }
+
+      .glass {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 13px;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.88);
+        color: #1f1f1e;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+
+      .glass:hover {
+        background: #fff;
+      }
+
+      .cover-empty {
+        height: 100%;
+        width: 100%;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-align: center;
+        padding: 20px;
+        color: var(--muted);
+        background:
+          radial-gradient(circle at 20% 30%, rgba(35, 131, 226, 0.1), transparent 45%),
+          radial-gradient(circle at 80% 70%, rgba(144, 101, 176, 0.1), transparent 45%), var(--bg-soft);
+        font-size: 14px;
+      }
+
+      .cover-empty:hover,
+      .cover.over .cover-empty {
+        background-color: var(--hover);
+      }
+
+      .cover-empty .ring {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--card);
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+        margin-bottom: 6px;
+      }
+
+      .cover-empty strong {
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .cover.over::before {
+        content: "Suelta las imágenes para agregarlas";
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(35, 131, 226, 0.75);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* ---------- Encabezado ---------- */
+      .page-head {
+        padding: 36px 0 8px;
+      }
+
+      .page-title {
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        outline: none;
+        border-radius: 6px;
+        margin-left: -4px;
+        padding: 0 4px;
+        display: inline-block;
+        max-width: 100%;
+        word-break: break-word;
+      }
+
+      .page-title:empty::before {
+        content: "Sin título";
+        color: var(--faint);
+      }
+
+      .page-title:hover {
+        background: var(--hover);
+      }
+
+      .page-title:focus {
+        background: transparent;
+        box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.35);
+      }
+
+      /* ---------- Resumen ---------- */
+      .stats {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-top: 24px;
+        overflow: hidden;
+      }
+
+      .stat {
+        padding: 14px 18px;
+        border-left: 1px solid var(--border);
+      }
+
+      .stat:first-child {
+        border-left: none;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+      }
+
+      .stat-value.warn {
+        color: var(--red);
+      }
+
+      .bar {
+        height: 6px;
+        background: var(--hover);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 6px;
+      }
+
+      .bar .fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 3px;
+        transition: width 0.4s ease;
+      }
+
+      .notice {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: var(--bg-soft);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 12px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .notice span {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      /* ---------- Botones ---------- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        background: var(--primary);
+        color: #fff;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background: var(--primary-hover);
+      }
+
+      .btn.ghost {
+        background: transparent;
+        color: var(--text);
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+
+      .btn.ghost:hover {
+        background: var(--hover);
+      }
+
+      .btn.danger {
+        background: transparent;
+        color: var(--red);
+        box-shadow: inset 0 0 0 1px rgba(212, 76, 71, 0.35);
+      }
+
+      .btn.danger:hover {
+        background: rgba(212, 76, 71, 0.08);
+      }
+
+      .icon-btn {
+        border: none;
+        background: transparent;
+        color: var(--faint);
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .icon-btn:hover {
+        background: var(--hover);
+        color: var(--text);
+      }
+
+      .icon-btn svg.i {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* ---------- Barra de herramientas ---------- */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 32px 0 14px;
+      }
+
+      .toolbar h2 {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .segmented {
+        display: inline-flex;
+        background: var(--hover);
+        border-radius: 7px;
+        padding: 2px;
+      }
+
+      .segmented button {
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 4px 10px;
+        border-radius: 5px;
+      }
+
+      .segmented button.on {
+        background: var(--card);
+        color: var(--text);
+        box-shadow: rgba(15, 15, 15, 0.1) 0 1px 2px;
+      }
+
+      /* ---------- Tablero ---------- */
+      .board {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+
+      .col {
+        background: color-mix(in srgb, var(--c) 5%, var(--bg-soft));
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .board.intro .col {
+        animation: fadeUp 0.25s ease both;
+      }
+
+      .col-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 2px 8px;
+      }
+
+      .pill {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 1px 8px;
+        border-radius: 5px;
+        background: color-mix(in srgb, var(--c) 16%, transparent);
+        color: color-mix(in srgb, var(--c) 85%, var(--text));
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+      }
+
+      .col-count {
+        font-size: 13px;
+        color: var(--faint);
+        flex: 1;
+      }
+
+      .col-bar {
+        height: 3px;
+        background: var(--hover);
+        border-radius: 2px;
+        margin: 0 2px 10px;
+        overflow: hidden;
+      }
+
+      .col-bar .fill {
+        height: 100%;
+        background: var(--c);
+        transition: width 0.4s ease;
+      }
+
+      .card {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--card);
+        box-shadow: var(--card-shadow);
+        border-radius: 7px;
+        padding: 9px 8px 9px 10px;
+        margin-bottom: 6px;
+        transition: box-shadow 0.15s;
+      }
+
+      .card:hover {
+        box-shadow: rgba(15, 15, 15, 0.1) 0 0 0 1px, rgba(15, 15, 15, 0.1) 0 4px 10px;
+      }
+
+      .todo {
+        width: 17px;
+        height: 17px;
+        margin-top: 2px;
+        border: 1.5px solid var(--faint);
+        border-radius: 4px;
+        background: transparent;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        color: #fff;
+      }
+
+      .todo:hover {
+        border-color: var(--primary);
+      }
+
+      .todo svg.i {
+        width: 12px;
+        height: 12px;
+        stroke-width: 3;
+        display: none;
+      }
+
+      .todo.done {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .todo.done svg.i {
+        display: block;
+      }
+
+      .card-body {
+        flex: 1;
+        min-width: 0;
+        cursor: pointer;
+      }
+
+      .card-text {
+        font-size: 14px;
+        font-weight: 500;
+        word-wrap: break-word;
+      }
+
+      .card.done .card-text {
+        text-decoration: line-through;
+        color: var(--faint);
+      }
+
+      .props {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 12px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+
+      .prop {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .prop svg.i {
+        width: 12px;
+        height: 12px;
+      }
+
+      .prop.late {
+        color: var(--red);
+        font-weight: 500;
+      }
+
+      .prop.ok {
+        color: var(--green);
+      }
+
+      .card .icon-btn {
+        opacity: 0;
+      }
+
+      .card:hover .icon-btn,
+      .card:focus-within .icon-btn {
+        opacity: 1;
+      }
+
+      @media (hover: none) {
+        .card .icon-btn {
+          opacity: 1;
+        }
+      }
+
+      .col-add {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px;
+        border-radius: 6px;
+      }
+
+      .col-add:hover {
+        background: var(--hover);
+        color: var(--text);
+      }
+
+      .empty {
+        font-size: 13px;
+        color: var(--faint);
+        padding: 2px 6px 8px;
+      }
+
+      .swipe-hint {
+        display: none;
+      }
+
+      /* ---------- Modales ---------- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 15, 0.45);
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        z-index: 50;
+        padding: 10vh 16px 16px;
+      }
+
+      .overlay.open {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--bg);
+        border-radius: 12px;
+        box-shadow: var(--modal-shadow);
+        width: 100%;
+        max-width: 460px;
+        padding: 24px;
+        max-height: 82vh;
+        overflow-y: auto;
+        animation: fadeUp 0.15s ease both;
+      }
+
+      .modal.wide {
+        max-width: 760px;
+      }
+
+      .modal h2 {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+      }
+
+      .modal .lead {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 18px;
+      }
+
+      .field {
+        margin-bottom: 14px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        font-size: 14px;
+        padding: 7px 10px;
+        border: none;
+        border-radius: 6px;
+        background: var(--bg);
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+
+      .field textarea {
+        resize: vertical;
+        min-height: 64px;
+      }
+
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        outline: none;
+        box-shadow: inset 0 0 0 1px var(--primary), 0 0 0 3px rgba(35, 131, 226, 0.2);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .colors,
+      .chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .swatch,
+      .chip {
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 13px;
+        font-weight: 500;
+        background: color-mix(in srgb, var(--c) 14%, transparent);
+        color: color-mix(in srgb, var(--c) 85%, var(--text));
+      }
+
+      .swatch.sel {
+        box-shadow: 0 0 0 2px var(--c);
+      }
+
+      .chip {
+        background: transparent;
+        color: var(--muted);
+        box-shadow: inset 0 0 0 1px var(--border);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chip .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+
+      .chip.on {
+        background: color-mix(in srgb, var(--c) 14%, transparent);
+        color: color-mix(in srgb, var(--c) 85%, var(--text));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 50%, transparent);
+      }
+
+      .check-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .modal-actions .left {
+        margin-right: auto;
+      }
+
+      /* Administrar vision board */
+      .vgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+      }
+
+      .vitem {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        background: var(--card);
+        position: relative;
+      }
+
+      .vitem img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        display: block;
+      }
+
+      .vitem .badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+
+      .vitem .icon-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1f1f1e;
+      }
+
+      .vitem .icon-btn:hover {
+        background: #fff;
+        color: var(--red);
+      }
+
+      .vitem input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-weight: 500;
+        outline: none;
+      }
+
+      .vitem input::placeholder {
+        color: var(--faint);
+        font-weight: 400;
+      }
+
+      .vupload {
+        border: 1.5px dashed var(--border);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 150px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .vupload:hover,
+      .vupload.over {
+        background: var(--hover);
+        color: var(--text);
+      }
+
+      /* ---------- Aviso con Deshacer ---------- */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 20px;
+        transform: translate(-50%, 160%);
+        background: #2a2a29;
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 8px 8px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        box-shadow: var(--modal-shadow);
+        transition: transform 0.2s ease;
+        z-index: 60;
+        max-width: calc(100% - 32px);
+      }
+
+      .toast.show {
+        transform: translate(-50%, 0);
+      }
+
+      .toast button {
+        border: none;
+        background: transparent;
+        color: #6cb2f0;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 3px 8px;
+        border-radius: 5px;
+      }
+
+      .toast button:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ---------- Celular ---------- */
+      @media (max-width: 600px) {
+        .cover {
+          height: 210px;
+        }
+        .collage[data-n="4"] {
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-rows: 1fr 1fr;
+        }
+        .shot figcaption {
+          font-size: 12px;
+          left: 10px;
+          bottom: 8px;
+        }
+        .page-title {
+          font-size: 28px;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+        .stat {
+          padding: 12px 14px;
+        }
+        .stat:first-child {
+          grid-column: 1 / -1;
+          border-bottom: 1px solid var(--border);
+        }
+        .stat:nth-child(2) {
+          border-left: none;
+        }
+        .stat-value {
+          font-size: 20px;
+        }
+        .board {
+          display: flex;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          margin: 0 -16px;
+          padding: 0 16px 12px;
+          scroll-padding: 0 16px;
+        }
+        .col {
+          flex: 0 0 85%;
+          scroll-snap-align: start;
+        }
+        .swipe-hint {
+          display: block;
+          font-size: 13px;
+          color: var(--muted);
+          margin-bottom: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Portada: vision board -->
+    <div class="cover" id="cover"></div>
+
+    <div class="page">
+      <header class="page-head">
+        <h1 class="page-title" id="title" contenteditable="true" spellcheck="false" title="Haz clic para cambiar el título"></h1>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Progreso general</div>
+            <div class="stat-value" id="statPct">0%</div>
+            <div class="bar"><div class="fill" id="statFill"></div></div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Cumplidas</div>
+            <div class="stat-value" id="statDone">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Pendientes</div>
+            <div class="stat-value" id="statPending">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Vencidas</div>
+            <div class="stat-value" id="statLate">0</div>
+          </div>
+        </div>
+
+        <div class="notice" id="exampleBanner" hidden>
+          <svg class="i"><use href="#i-info" /></svg>
+          <span>Estas son metas de ejemplo. Edítalas o bórralas para empezar con las tuyas.</span>
+          <button class="btn ghost" onclick="clearExamples()">Borrar ejemplos</button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <h2>Metas</h2>
+        <div class="toolbar-right">
+          <div class="segmented" id="filters" role="group" aria-label="Filtrar metas">
+            <button data-f="all" class="on">Todas</button>
+            <button data-f="pending">Pendientes</button>
+            <button data-f="done">Cumplidas</button>
+          </div>
+          <button class="btn ghost" onclick="openSectionModal()">Nueva sección</button>
+          <button class="btn" onclick="openGoalModal()"><svg class="i"><use href="#i-plus" /></svg>Nueva meta</button>
+        </div>
+      </div>
+
+      <div class="swipe-hint">Desliza para ver todas las secciones →</div>
+      <div id="board"></div>
+      <input type="file" id="visionFile" accept="image/*" multiple hidden />
+    </div>
+
+    <!-- Íconos -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-5-5L5 21" /></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5" /><path d="M12 3v12" /></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></symbol>
+    </svg>
+
+    <!-- Aviso con Deshacer -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span id="toastMsg"></span>
+      <button id="toastUndo" onclick="undo()">Deshacer</button>
+    </div>
+
+    <!-- Bienvenida (primera vez) -->
+    <div class="overlay" id="welcomeOverlay">
+      <form class="modal" id="welcomeForm">
+        <h2>Configura tu tablero de metas</h2>
+        <p class="lead">
+          Organiza tus metas por secciones, márcalas cuando las cumplas y arma tu vision board. Todo se guarda en
+          este navegador.
+        </p>
+        <div class="field">
+          <label for="wName">Tu nombre (opcional)</label>
+          <input id="wName" maxlength="30" placeholder="Ej. Alex" />
+        </div>
+        <div class="field">
+          <label>Elige tus secciones. Puedes cambiarlas después.</label>
+          <div class="chips" id="wChips"></div>
+        </div>
+        <label class="check-line"><input type="checkbox" id="wExamples" /> Agregar metas de ejemplo</label>
+        <div class="modal-actions">
+          <button type="submit" class="btn">Empezar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: meta -->
+    <div class="overlay" id="goalOverlay">
+      <form class="modal" id="goalForm">
+        <h2 id="goalModalTitle">Nueva meta</h2>
+        <p class="lead">Escribe algo concreto y medible.</p>
+        <div class="field">
+          <label for="gText">¿Qué quieres lograr?</label>
+          <input id="gText" required maxlength="160" placeholder="Ej. Aprobar inglés B2" />
+        </div>
+        <div class="field">
+          <label for="gNote">Nota (opcional)</label>
+          <textarea id="gNote" maxlength="300" placeholder="Detalles, fechas, recursos…"></textarea>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="gSection">Sección</label>
+            <select id="gSection"></select>
+          </div>
+          <div class="field">
+            <label for="gDue">Fecha límite</label>
+            <input id="gDue" type="date" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn danger left" id="gDelete">Eliminar</button>
+          <button type="button" class="btn ghost" onclick="closeModals()">Cancelar</button>
+          <button type="submit" class="btn">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: sección -->
+    <div class="overlay" id="sectionOverlay">
+      <form class="modal" id="sectionForm">
+        <h2 id="sectionModalTitle">Nueva sección</h2>
+        <p class="lead">Agrupa metas de un mismo tema.</p>
+        <div class="field">
+          <label for="sName">Nombre</label>
+          <input id="sName" required maxlength="40" placeholder="Ej. Finanzas" />
+        </div>
+        <div class="field">
+          <label>Color</label>
+          <div class="colors" id="sColors"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn danger left" id="sDelete">Eliminar sección</button>
+          <button type="button" class="btn ghost" onclick="closeModals()">Cancelar</button>
+          <button type="submit" class="btn">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal: administrar vision board -->
+    <div class="overlay" id="visionOverlay">
+      <div class="modal wide" role="dialog" aria-labelledby="visionTitle">
+        <h2 id="visionTitle">Vision board</h2>
+        <p class="lead">
+          Imágenes de lo que quieres lograr. Las primeras 6 forman la portada. Escribe una frase debajo de cada una.
+        </p>
+        <div class="vgrid" id="vgrid"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeModals()">Listo</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "metas-app-v1";
+      const COVER_MAX = 6;
+
+      // Colores de etiqueta estilo Notion
+      const COLORS = [
+        { name: "Gris", hex: "#787774" },
+        { name: "Café", hex: "#9f6b53" },
+        { name: "Naranja", hex: "#d9730d" },
+        { name: "Amarillo", hex: "#cb912f" },
+        { name: "Verde", hex: "#448361" },
+        { name: "Azul", hex: "#337ea9" },
+        { name: "Morado", hex: "#9065b0" },
+        { name: "Rosa", hex: "#c14c8a" },
+        { name: "Rojo", hex: "#d44c47" },
+      ];
+      const HEX = Object.fromEntries(COLORS.map((c) => [c.name, c.hex]));
+
+      const icon = (name) => `<svg class="i"><use href="#i-${name}" /></svg>`;
+      const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      const today = () => new Date().toISOString().slice(0, 10);
+
+      // Secciones sugeridas para personas nuevas (con metas de ejemplo genéricas)
+      const CATALOG = [
+        { id: "academica", name: "Académica", color: HEX.Azul, on: true, examples: ["Aprobar todas las materias del semestre", "Leer 12 libros este año"] },
+        { id: "carrera", name: "Carrera", color: HEX.Naranja, on: true, examples: ["Terminar un curso online con certificado", "Participar en un hackathón"] },
+        { id: "salud", name: "Salud", color: HEX.Verde, on: true, examples: ["Dormir 7 horas mínimo", "Tomar 2 litros de agua al día"] },
+        { id: "fisico", name: "Físico", color: HEX.Rojo, on: true, examples: ["Entrenar 3 veces por semana"] },
+        { id: "idioma", name: "Idioma", color: HEX.Morado, on: true, examples: ["Aprobar un nivel de inglés"] },
+        { id: "finanzas", name: "Finanzas", color: HEX.Amarillo, examples: ["Ahorrar el 10% de lo que gano"] },
+        { id: "marca", name: "Marca personal", color: HEX.Café, examples: ["Actualizar mi perfil de LinkedIn"] },
+        { id: "comunicacion", name: "Comunicación", color: HEX.Gris, examples: ["Exponer al menos 1 vez al mes"] },
+        { id: "mentalidad", name: "Mentalidad", color: HEX.Rosa, examples: ["Escribir en mi journal 3 veces por semana"] },
+        { id: "hobbies", name: "Hobbies", color: HEX.Naranja, examples: ["Aprender algo nuevo por diversión"] },
+      ];
+
+      // Colores del primer diseño → colores estilo Notion
+      const OLD_COLORS = {
+        "#3a5c8a": HEX.Azul,
+        "#c4773a": HEX.Naranja,
+        "#4a7c59": HEX.Verde,
+        "#9a4a5a": HEX.Rojo,
+        "#7a5c9a": HEX.Morado,
+        "#2f8a8a": HEX.Café,
+        "#c45a8a": HEX.Rosa,
+        "#b8952e": HEX.Amarillo,
+        "#6b7a3a": HEX.Gris,
+        "#6b6b6b": HEX.Gris,
+      };
+
+      const newGoal = (sectionId, text, note = "", extra = {}) => ({ id: uid(), sectionId, text, note, due: "", done: false, doneAt: null, ...extra });
+
+      function migrate(d) {
+        d.migrations = d.migrations || [];
+        d.vision = d.vision || [];
+        d.profile = d.profile || {};
+        let changed = false;
+        if (!d.migrations.includes("notion")) {
+          d.sections.forEach((s) => (s.color = OLD_COLORS[s.color] || s.color));
+          d.migrations.push("notion");
+          changed = true;
+        }
+        return changed;
+      }
+
+      // Devuelve false si el navegador no tiene espacio (útil con imágenes)
+      function persist(d) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function load() {
+        let d = null;
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) d = JSON.parse(raw);
+        } catch (e) {}
+        if (!d) return null; // primera vez → bienvenida
+        if (migrate(d)) persist(d);
+        return d;
+      }
+
+      const save = () => persist(data);
+
+      let data = load();
+      let filter = "all";
+      let editingGoalId = null;
+      let editingSectionId = null;
+      let selectedColor = COLORS[0].hex;
+      let firstRender = true;
+
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+      function stats(goals) {
+        const total = goals.length;
+        const done = goals.filter((g) => g.done).length;
+        return { total, done, pct: total ? Math.round((done / total) * 100) : 0 };
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "";
+        const [y, m, d] = iso.split("-").map(Number);
+        return new Date(y, m - 1, d).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      const isLate = (g) => !!g.due && !g.done && g.due < today();
+
+      function defaultTitle() {
+        const name = data.profile?.name;
+        const year = new Date().getFullYear();
+        return name ? `Metas de ${name} ${year}` : `Mis metas ${year}`;
+      }
+
+      /* ---------- Deshacer ---------- */
+      let undoSnapshot = null;
+      let toastTimer = null;
+
+      function snapshot() {
+        undoSnapshot = JSON.stringify(data);
+      }
+
+      function showToast(msg, canUndo = true) {
+        document.getElementById("toastMsg").textContent = msg;
+        document.getElementById("toastUndo").hidden = !canUndo;
+        document.getElementById("toast").classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(hideToast, 6000);
+      }
+
+      function hideToast() {
+        document.getElementById("toast").classList.remove("show");
+        undoSnapshot = null;
+      }
+
+      function undo() {
+        if (!undoSnapshot) return;
+        data = JSON.parse(undoSnapshot);
+        save();
+        hideToast();
+        render();
+      }
+
+      /* ---------- Render ---------- */
+      function render() {
+        renderCover();
+        renderHeader();
+        renderBoard();
+        if (document.getElementById("visionOverlay").classList.contains("open")) renderManager();
+      }
+
+      function renderCover() {
+        const cover = document.getElementById("cover");
+        const imgs = data.vision;
+        if (!imgs.length) {
+          cover.innerHTML = `<button class="cover-empty" onclick="pickImages()">
+              <span class="ring">${icon("image")}</span>
+              <strong>Crea tu vision board</strong>
+              <span>Sube imágenes de lo que quieres lograr. Se mostrarán aquí como portada.</span>
+            </button>`;
+          return;
+        }
+        // Con más de 6 imágenes, la última casilla muestra "+N"
+        const extra = imgs.length - COVER_MAX;
+        const shown = extra > 0 ? imgs.slice(0, COVER_MAX - 1) : imgs;
+        let tiles = shown
+          .map(
+            (v) => `<figure class="shot"><img src="${v.src}" alt="${esc(v.caption || "Imagen del vision board")}" />
+              ${v.caption ? `<figcaption>${esc(v.caption)}</figcaption>` : ""}</figure>`
+          )
+          .join("");
+        if (extra > 0) {
+          tiles += `<button class="shot more" onclick="openVisionModal()" aria-label="Ver todas las imágenes">
+              <img src="${imgs[COVER_MAX - 1].src}" alt="" /><span>+${extra + 1}</span></button>`;
+        }
+        cover.innerHTML = `<div class="collage" data-n="${Math.min(imgs.length, COVER_MAX)}">${tiles}</div>
+          <div class="cover-actions">
+            <button class="glass" onclick="openVisionModal()">${icon("edit")}Editar vision board</button>
+          </div>`;
+      }
+
+      function renderHeader() {
+        const titleEl = document.getElementById("title");
+        const title = data.profile?.title || defaultTitle();
+        if (document.activeElement !== titleEl) titleEl.textContent = title;
+        document.title = title;
+
+        const st = stats(data.goals);
+        const late = data.goals.filter(isLate).length;
+        document.getElementById("statPct").textContent = st.pct + "%";
+        document.getElementById("statFill").style.width = st.pct + "%";
+        document.getElementById("statDone").textContent = st.done;
+        document.getElementById("statPending").textContent = st.total - st.done;
+        const lateEl = document.getElementById("statLate");
+        lateEl.textContent = late;
+        lateEl.classList.toggle("warn", late > 0);
+        document.getElementById("exampleBanner").hidden = !data.goals.some((g) => g.example);
+      }
+
+      function renderBoard() {
+        let html = "";
+        data.sections.forEach((s) => {
+          const secGoals = data.goals.filter((g) => g.sectionId === s.id);
+          const t = stats(secGoals);
+          const visible = secGoals
+            .filter((g) => filter === "all" || (filter === "done" ? g.done : !g.done))
+            .sort((a, b) => a.done - b.done); // pendientes primero
+
+          let body = visible.map(cardHtml).join("");
+          if (!visible.length && t.total) body = `<div class="empty">${filter === "done" ? "Ninguna cumplida todavía." : "Todo cumplido en esta sección."}</div>`;
+
+          html += `<section class="col" style="--c:${s.color}">
+            <div class="col-head">
+              <span class="pill">${esc(s.name)}</span>
+              <span class="col-count">${t.done}/${t.total}</span>
+              <button class="icon-btn" title="Editar sección" aria-label="Editar sección ${esc(s.name)}" onclick="openSectionModal('${s.id}')">${icon("edit")}</button>
+            </div>
+            <div class="col-bar" title="${t.pct}% cumplido"><div class="fill" style="width:${t.pct}%"></div></div>
+            ${body}
+            <button class="col-add" onclick="openGoalModal(null, '${s.id}')">${icon("plus")}Nueva meta</button>
+          </section>`;
+        });
+
+        if (!html) html = `<div class="empty">No tienes secciones. Crea una con “Nueva sección”.</div>`;
+        const board = document.getElementById("board");
+        board.className = "board" + (firstRender ? " intro" : "");
+        firstRender = false;
+        board.innerHTML = html;
+      }
+
+      function cardHtml(g) {
+        const props = [];
+        if (g.note) props.push(`<span class="prop">${esc(g.note)}</span>`);
+        if (g.due) {
+          const late = isLate(g);
+          props.push(`<span class="prop ${late ? "late" : ""}">${icon(late ? "alert" : "calendar")}${fmtDate(g.due)}${late ? " · vencida" : ""}</span>`);
+        }
+        if (g.done && g.doneAt) props.push(`<span class="prop ok">${icon("check")}Cumplida el ${fmtDate(g.doneAt)}</span>`);
+        const label = g.done ? "Marcar como pendiente" : "Marcar como cumplida";
+
+        return `<div class="card ${g.done ? "done" : ""}">
+          <button class="todo ${g.done ? "done" : ""}" aria-label="${label}" title="${label}" onclick="toggleGoal('${g.id}')">${icon("check")}</button>
+          <div class="card-body" role="button" tabindex="0" title="Editar meta" onclick="openGoalModal('${g.id}')" onkeydown="if(event.key==='Enter')openGoalModal('${g.id}')">
+            <div class="card-text">${esc(g.text)}</div>
+            ${props.length ? `<div class="props">${props.join("")}</div>` : ""}
+          </div>
+          <button class="icon-btn" title="Eliminar" aria-label="Eliminar meta" onclick="removeGoal('${g.id}')">${icon("trash")}</button>
+        </div>`;
+      }
+
+      function renderManager() {
+        document.getElementById("vgrid").innerHTML =
+          data.vision
+            .map(
+              (v, i) => `<div class="vitem">
+                <img src="${v.src}" alt="${esc(v.caption || "Imagen del vision board")}" />
+                ${i < COVER_MAX ? `<span class="badge">Portada</span>` : ""}
+                <button class="icon-btn" title="Quitar imagen" aria-label="Quitar imagen" onclick="removeImage('${v.id}')">${icon("trash")}</button>
+                <input value="${esc(v.caption)}" maxlength="60" placeholder="Escribe una frase…" aria-label="Frase de la imagen" onchange="setCaption('${v.id}', this.value)" />
+              </div>`
+            )
+            .join("") +
+          `<button class="vupload" id="vupload" onclick="pickImages()">${icon("upload")}Subir imágenes<span style="font-weight:400;color:var(--faint)">o arrástralas aquí</span></button>`;
+      }
+
+      /* ---------- Filtros y título ---------- */
+      document.getElementById("filters").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        filter = b.dataset.f;
+        document.querySelectorAll("#filters button").forEach((x) => x.classList.toggle("on", x === b));
+        renderBoard();
+      });
+
+      const titleEl = document.getElementById("title");
+      titleEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          titleEl.blur();
+        }
+      });
+      titleEl.addEventListener("blur", () => {
+        const t = titleEl.textContent.trim();
+        data.profile = data.profile || {};
+        data.profile.title = t && t !== defaultTitle() ? t : "";
+        save();
+        renderHeader();
+      });
+
+      /* ---------- Metas ---------- */
+      function toggleGoal(id) {
+        const g = data.goals.find((x) => x.id === id);
+        snapshot();
+        g.done = !g.done;
+        g.doneAt = g.done ? today() : null;
+        save();
+        render();
+        if (g.done) showToast("Meta cumplida");
+        else hideToast();
+      }
+
+      function removeGoal(id) {
+        snapshot();
+        data.goals = data.goals.filter((g) => g.id !== id);
+        save();
+        render();
+        showToast("Meta eliminada");
+      }
+
+      function clearExamples() {
+        snapshot();
+        data.goals = data.goals.filter((g) => !g.example);
+        save();
+        render();
+        showToast("Ejemplos borrados");
+      }
+
+      function openGoalModal(id = null, sectionId = null) {
+        if (!data.sections.length) return openSectionModal();
+        editingGoalId = id;
+        const g = id ? data.goals.find((x) => x.id === id) : null;
+        document.getElementById("goalModalTitle").textContent = g ? "Editar meta" : "Nueva meta";
+        document.getElementById("gSection").innerHTML = data.sections.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join("");
+        document.getElementById("gText").value = g ? g.text : "";
+        document.getElementById("gNote").value = g ? g.note : "";
+        document.getElementById("gDue").value = g ? g.due : "";
+        document.getElementById("gSection").value = g?.sectionId || sectionId || data.sections[0].id;
+        document.getElementById("gDelete").style.display = g ? "" : "none";
+        document.getElementById("goalOverlay").classList.add("open");
+        setTimeout(() => document.getElementById("gText").focus(), 50);
+      }
+
+      document.getElementById("goalForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fields = {
+          text: document.getElementById("gText").value.trim(),
+          note: document.getElementById("gNote").value.trim(),
+          due: document.getElementById("gDue").value,
+          sectionId: document.getElementById("gSection").value,
+        };
+        if (!fields.text) return;
+        if (editingGoalId) {
+          // Al editar un ejemplo, pasa a ser una meta propia
+          Object.assign(data.goals.find((g) => g.id === editingGoalId), fields, { example: false });
+        } else {
+          data.goals.push(newGoal(fields.sectionId, fields.text, fields.note, { due: fields.due }));
+        }
+        save();
+        closeModals();
+        render();
+      });
+
+      document.getElementById("gDelete").addEventListener("click", () => {
+        const id = editingGoalId;
+        closeModals();
+        removeGoal(id);
+      });
+
+      /* ---------- Secciones ---------- */
+      function renderSwatches() {
+        document.getElementById("sColors").innerHTML = COLORS.map(
+          (c) =>
+            `<button type="button" class="swatch ${c.hex === selectedColor ? "sel" : ""}" style="--c:${c.hex}" aria-pressed="${c.hex === selectedColor}" onclick="pickColor('${c.hex}')">${c.name}</button>`
+        ).join("");
+      }
+
+      function pickColor(c) {
+        selectedColor = c;
+        renderSwatches();
+      }
+
+      function openSectionModal(id = null) {
+        editingSectionId = id;
+        const s = id ? data.sections.find((x) => x.id === id) : null;
+        document.getElementById("sectionModalTitle").textContent = s ? "Editar sección" : "Nueva sección";
+        document.getElementById("sName").value = s ? s.name : "";
+        selectedColor = s ? s.color : COLORS[data.sections.length % COLORS.length].hex;
+        document.getElementById("sDelete").style.display = s ? "" : "none";
+        renderSwatches();
+        document.getElementById("sectionOverlay").classList.add("open");
+        setTimeout(() => document.getElementById("sName").focus(), 50);
+      }
+
+      document.getElementById("sectionForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("sName").value.trim();
+        if (!name) return;
+        if (editingSectionId) {
+          Object.assign(data.sections.find((s) => s.id === editingSectionId), { name, color: selectedColor });
+        } else {
+          data.sections.push({ id: uid(), name, color: selectedColor });
+        }
+        save();
+        closeModals();
+        render();
+      });
+
+      document.getElementById("sDelete").addEventListener("click", () => {
+        const sec = data.sections.find((s) => s.id === editingSectionId);
+        snapshot();
+        data.sections = data.sections.filter((s) => s.id !== editingSectionId);
+        data.goals = data.goals.filter((g) => g.sectionId !== editingSectionId);
+        save();
+        closeModals();
+        render();
+        showToast(`Sección “${sec.name}” eliminada`);
+      });
+
+      /* ---------- Vision board ---------- */
+      const fileInput = document.getElementById("visionFile");
+
+      function pickImages() {
+        fileInput.click();
+      }
+
+      function openVisionModal() {
+        renderManager();
+        document.getElementById("visionOverlay").classList.add("open");
+      }
+
+      fileInput.addEventListener("change", () => {
+        addImages([...fileInput.files]);
+        fileInput.value = "";
+      });
+
+      // Reduce la imagen para que quepan muchas en el navegador
+      async function compress(file) {
+        const url = URL.createObjectURL(file);
+        try {
+          const img = new Image();
+          img.src = url;
+          await img.decode();
+          const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.naturalWidth * k);
+          canvas.height = Math.round(img.naturalHeight * k);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL("image/jpeg", 0.78);
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+
+      async function addImages(files) {
+        let added = 0;
+        for (const file of files.filter((f) => f.type.startsWith("image/"))) {
+          let src;
+          try {
+            src = await compress(file);
+          } catch (e) {
+            showToast(`No se pudo abrir “${file.name}”. Prueba con JPG o PNG.`, false);
+            continue;
+          }
+          data.vision.push({ id: uid(), src, caption: "" });
+          if (!save()) {
+            data.vision.pop();
+            showToast("Ya no hay espacio en este navegador. Quita alguna imagen.", false);
+            break;
+          }
+          added++;
+        }
+        if (added) render();
+      }
+
+      function removeImage(id) {
+        snapshot();
+        data.vision = data.vision.filter((v) => v.id !== id);
+        save();
+        render();
+        showToast("Imagen quitada");
+      }
+
+      function setCaption(id, value) {
+        data.vision.find((v) => v.id === id).caption = value.trim();
+        save();
+        renderCover();
+      }
+
+      // Arrastrar y soltar imágenes en la portada o en el administrador
+      function enableDrop(el, onOver) {
+        el.addEventListener("dragover", (e) => {
+          if (![...e.dataTransfer.types].includes("Files")) return;
+          e.preventDefault();
+          onOver(true);
+        });
+        el.addEventListener("dragleave", (e) => {
+          if (!el.contains(e.relatedTarget)) onOver(false);
+        });
+        el.addEventListener("drop", (e) => {
+          e.preventDefault();
+          onOver(false);
+          addImages([...e.dataTransfer.files]);
+        });
+      }
+
+      const coverEl = document.getElementById("cover");
+      enableDrop(coverEl, (on) => coverEl.classList.toggle("over", on));
+      const vModal = document.querySelector("#visionOverlay .modal");
+      enableDrop(vModal, (on) => document.getElementById("vupload")?.classList.toggle("over", on));
+
+      /* ---------- Modales ---------- */
+      function closeModals() {
+        document.querySelectorAll(".overlay:not(#welcomeOverlay)").forEach((o) => o.classList.remove("open"));
+        editingGoalId = null;
+        editingSectionId = null;
+      }
+
+      document.querySelectorAll(".overlay:not(#welcomeOverlay)").forEach((o) =>
+        o.addEventListener("click", (e) => {
+          if (e.target === o) closeModals();
+        })
+      );
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModals();
+      });
+
+      /* ---------- Bienvenida (primera vez) ---------- */
+      const chosen = new Set(CATALOG.filter((c) => c.on).map((c) => c.id));
+
+      function renderChips() {
+        document.getElementById("wChips").innerHTML = CATALOG.map(
+          (c) =>
+            `<button type="button" class="chip ${chosen.has(c.id) ? "on" : ""}" style="--c:${c.color}" aria-pressed="${chosen.has(c.id)}" onclick="toggleChip('${c.id}')"><span class="dot"></span>${c.name}</button>`
+        ).join("");
+      }
+
+      function toggleChip(id) {
+        chosen.has(id) ? chosen.delete(id) : chosen.add(id);
+        renderChips();
+      }
+
+      document.getElementById("welcomeForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const picked = CATALOG.filter((c) => chosen.has(c.id));
+        const withExamples = document.getElementById("wExamples").checked;
+        data = {
+          profile: { name: document.getElementById("wName").value.trim(), title: "" },
+          sections: picked.map(({ id, name, color }) => ({ id, name, color })),
+          goals: withExamples ? picked.flatMap((c) => c.examples.map((t) => newGoal(c.id, t, "", { example: true }))) : [],
+          vision: [],
+          migrations: ["notion"],
+        };
+        save();
+        document.getElementById("welcomeOverlay").classList.remove("open");
+        firstRender = true;
+        render();
+      });
+
+      if (!data) {
+        data = { sections: [], goals: [], vision: [], profile: {} };
+        renderChips();
+        document.getElementById("welcomeOverlay").classList.add("open");
+      }
+      render();
+    </script>
+  </body>
+</html>
