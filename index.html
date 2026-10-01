@@ -1363,7 +1363,7 @@
             id="gText"
             required
             maxlength="160"
-            placeholder="Ej. Aprobar inglés B2"
+            placeholder="Ej. Algo concreto que quieras lograr"
           />
         </div>
         <div class="field">
@@ -1470,6 +1470,7 @@
       const CATALOG = [
         {
           id: "academica",
+          hint: "Sacar 16 o más en el promedio del ciclo",
           name: "Académica",
           color: HEX.Azul,
           on: true,
@@ -1480,6 +1481,7 @@
         },
         {
           id: "carrera",
+          hint: "Conseguir mis prácticas antes de julio",
           name: "Carrera",
           color: HEX.Naranja,
           on: true,
@@ -1490,6 +1492,7 @@
         },
         {
           id: "salud",
+          hint: "Comer fruta todos los días",
           name: "Salud",
           color: HEX.Verde,
           on: true,
@@ -1497,6 +1500,7 @@
         },
         {
           id: "fisico",
+          hint: "Correr 5 km sin parar",
           name: "Físico",
           color: HEX.Rojo,
           on: true,
@@ -1504,6 +1508,7 @@
         },
         {
           id: "idioma",
+          hint: "Aprobar inglés B2",
           name: "Idioma",
           color: HEX.Morado,
           on: true,
@@ -1511,35 +1516,51 @@
         },
         {
           id: "finanzas",
+          hint: "Ahorrar S/ 1 000 para diciembre",
           name: "Finanzas",
           color: HEX.Amarillo,
           examples: ["Ahorrar el 10% de lo que gano"],
         },
         {
           id: "marca",
+          hint: "Publicar en LinkedIn 2 veces al mes",
           name: "Marca personal",
           color: HEX.Café,
           examples: ["Actualizar mi perfil de LinkedIn"],
         },
         {
           id: "comunicacion",
+          hint: "Hablar en público sin leer notas",
           name: "Comunicación",
           color: HEX.Gris,
           examples: ["Exponer al menos 1 vez al mes"],
         },
         {
           id: "mentalidad",
+          hint: "Meditar 10 minutos cada mañana",
           name: "Mentalidad",
           color: HEX.Rosa,
           examples: ["Escribir en mi journal 3 veces por semana"],
         },
         {
           id: "hobbies",
+          hint: "Aprender a tocar 3 canciones en guitarra",
           name: "Hobbies",
           color: HEX.Naranja,
           examples: ["Aprender algo nuevo por diversión"],
         },
       ];
+
+      // Ejemplo del campo "¿Qué quieres lograr?" según la sección elegida
+      const norm = (t) =>
+        String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+      function goalHint(sectionId) {
+        const sec = data.sections.find((s) => s.id === sectionId);
+        const c = CATALOG.find(
+          (c) => c.id === sectionId || (sec && norm(c.name) === norm(sec.name)),
+        );
+        return "Ej. " + (c ? c.hint : "Algo concreto que quieras lograr");
+      }
 
       // Colores del primer diseño → colores estilo Notion
       const OLD_COLORS = {
@@ -1895,10 +1916,18 @@
         document.getElementById("gDue").value = g ? g.due : "";
         document.getElementById("gSection").value =
           g?.sectionId || sectionId || data.sections[0].id;
+        updateGoalHint();
         document.getElementById("gDelete").style.display = g ? "" : "none";
         document.getElementById("goalOverlay").classList.add("open");
         setTimeout(() => document.getElementById("gText").focus(), 50);
       }
+
+      function updateGoalHint() {
+        document.getElementById("gText").placeholder = goalHint(
+          document.getElementById("gSection").value,
+        );
+      }
+      document.getElementById("gSection").addEventListener("change", updateGoalHint);
 
       document.getElementById("goalForm").addEventListener("submit", (e) => {
         e.preventDefault();
