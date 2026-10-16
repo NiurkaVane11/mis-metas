@@ -103,6 +103,113 @@
         stroke-linejoin: round;
       }
 
+      /* ---------- Barra lateral: años ---------- */
+      .app {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        width: 190px;
+        height: 100vh;
+        flex-shrink: 0;
+        overflow-y: auto;
+        background: var(--bg-soft);
+        border-right: 1px solid var(--border);
+        padding: 18px 10px;
+      }
+
+      .side-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 0 8px 6px;
+      }
+
+      .years {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .year {
+        display: flex;
+        align-items: center;
+        border-radius: 6px;
+      }
+
+      .year:hover {
+        background: var(--hover);
+      }
+
+      .year.on {
+        background: var(--hover);
+      }
+
+      .year-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 6px 8px;
+        text-align: left;
+      }
+
+      .year.on .year-btn {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .year-pct {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--faint);
+      }
+
+      .year .icon-btn {
+        opacity: 0;
+        margin-right: 2px;
+      }
+
+      .year:hover .icon-btn,
+      .year:focus-within .icon-btn {
+        opacity: 1;
+      }
+
+      .year-add {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-top: 4px;
+        white-space: nowrap;
+      }
+
+      .year-add:hover {
+        background: var(--hover);
+        color: var(--text);
+      }
+
       .page {
         max-width: 1200px;
         margin: 0 auto;
@@ -1087,6 +1194,7 @@
         .cover-wrap:has(.cover-empty) .brand {
           display: none;
         }
+        .sidebar,
         .cover-actions,
         .subtle-btn,
         .toolbar-right,
@@ -1140,6 +1248,34 @@
 
       /* ---------- Celular ---------- */
       @media (max-width: 600px) {
+        /* Los años pasan a una franja horizontal arriba */
+        .app {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          overflow-x: auto;
+          padding: 8px 16px;
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .side-label,
+        .year .icon-btn {
+          display: none;
+        }
+        .years {
+          flex-direction: row;
+        }
+        .year-add {
+          width: auto;
+          margin-top: 0;
+        }
         .cover {
           height: 210px;
         }
@@ -1193,6 +1329,15 @@
     </style>
   </head>
   <body>
+    <div class="app">
+    <!-- Barra lateral: un tablero por año -->
+    <aside class="sidebar" aria-label="Años">
+      <div class="side-label">Años</div>
+      <nav class="years" id="years"></nav>
+      <button class="year-add" id="yearAdd" onclick="addYear()"></button>
+    </aside>
+
+    <main class="main">
     <!-- Portada: vision board -->
     <div class="cover-wrap">
       <div class="brand" aria-label="Goals"><img src="icon.svg" alt="" width="20" height="20" />Goals</div>
@@ -1272,6 +1417,8 @@
       <div class="swipe-hint">Desliza para ver todas las secciones →</div>
       <div id="board"></div>
       <input type="file" id="visionFile" accept="image/*" multiple hidden />
+    </div>
+    </main>
     </div>
 
     <!-- Íconos -->
@@ -1444,7 +1591,10 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "metas-app-v1";
+      // v2 guarda un tablero por año; v1 (un solo tablero) se conserva como respaldo
+      const STORAGE_KEY = "goals-v2";
+      const OLD_KEY = "metas-app-v1";
+      const FIRST_YEAR = "2026";
       const COVER_MAX = 6;
 
       // Colores de etiqueta estilo Notion
@@ -1610,20 +1760,37 @@
         }
       }
 
-      function load() {
-        let d = null;
+      const readJson = (key) => {
         try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) d = JSON.parse(raw);
-        } catch (e) {}
-        if (!d) return null; // primera vez → bienvenida
-        if (migrate(d)) persist(d);
-        return d;
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      };
+
+      function load() {
+        let s = readJson(STORAGE_KEY);
+        let changed = false;
+        if (!s) {
+          // El tablero de antes pasa a ser el de 2026
+          const old = readJson(OLD_KEY);
+          if (!old) return null; // primera vez → bienvenida
+          s = { current: FIRST_YEAR, years: { [FIRST_YEAR]: old } };
+          changed = true;
+        }
+        Object.values(s.years).forEach((d) => {
+          if (migrate(d)) changed = true;
+        });
+        if (!s.years[s.current]) s.current = Object.keys(s.years).sort().pop();
+        if (changed) persist(s);
+        return s;
       }
 
-      const save = () => persist(data);
+      const save = () => persist(store);
 
-      let data = load();
+      let store = load();
+      let data = store && store.years[store.current]; // tablero del año abierto
       let filter = "all";
       let editingGoalId = null;
       let editingSectionId = null;
@@ -1667,7 +1834,7 @@
 
       function defaultTitle() {
         const name = data.profile?.name;
-        const year = new Date().getFullYear();
+        const year = store.current;
         return name ? `Metas de ${name} ${year}` : `Mis metas ${year}`;
       }
 
@@ -1676,7 +1843,7 @@
       let toastTimer = null;
 
       function snapshot() {
-        undoSnapshot = JSON.stringify(data);
+        undoSnapshot = JSON.stringify(store);
       }
 
       function showToast(msg, canUndo = true) {
@@ -1694,14 +1861,76 @@
 
       function undo() {
         if (!undoSnapshot) return;
-        data = JSON.parse(undoSnapshot);
+        store = JSON.parse(undoSnapshot);
+        data = store.years[store.current];
         save();
         hideToast();
         render();
       }
 
+      /* ---------- Años ---------- */
+      const yearList = () => Object.keys(store.years).sort();
+
+      function renderYears() {
+        const years = yearList();
+        document.getElementById("years").innerHTML = years
+          .map((y) => {
+            const on = y === store.current;
+            const pct = stats(store.years[y].goals).pct;
+            return `<div class="year ${on ? "on" : ""}">
+              <button class="year-btn" onclick="switchYear('${y}')" ${on ? 'aria-current="page"' : ""}>${y}<span class="year-pct">${pct}%</span></button>
+              ${years.length > 1 ? `<button class="icon-btn" title="Eliminar ${y}" aria-label="Eliminar el año ${y}" onclick="removeYear('${y}')">${icon("trash")}</button>` : ""}
+            </div>`;
+          })
+          .join("");
+        document.getElementById("yearAdd").innerHTML =
+          `${icon("plus")}Agregar ${Number(years[years.length - 1]) + 1}`;
+      }
+
+      function switchYear(y) {
+        if (y === store.current) return;
+        hideToast();
+        store.current = y;
+        data = store.years[y];
+        save();
+        firstRender = true;
+        render();
+        window.scrollTo(0, 0);
+      }
+
+      // El año nuevo usa como plantilla las secciones del año que estás viendo
+      function addYear() {
+        const years = yearList();
+        const next = String(Number(years[years.length - 1]) + 1);
+        const from = store.current;
+        store.years[next] = {
+          profile: { name: data.profile?.name || "", title: "" },
+          sections: data.sections.map((s) => ({ ...s })),
+          goals: [],
+          vision: [],
+          migrations: [...(data.migrations || [])],
+        };
+        switchYear(next);
+        showToast(`${next} creado con las secciones de ${from}`, false);
+      }
+
+      function removeYear(y) {
+        if (yearList().length < 2) return;
+        snapshot();
+        delete store.years[y];
+        if (store.current === y) {
+          store.current = yearList().pop();
+          data = store.years[store.current];
+          firstRender = true;
+        }
+        save();
+        render();
+        showToast(`Año ${y} eliminado`);
+      }
+
       /* ---------- Render ---------- */
       function render() {
+        renderYears();
         renderCover();
         renderHeader();
         renderBoard();
@@ -2177,14 +2406,17 @@
           vision: [],
           migrations: ["notion"],
         };
+        store.years[store.current] = data;
         save();
         document.getElementById("welcomeOverlay").classList.remove("open");
         firstRender = true;
         render();
       });
 
-      if (!data) {
+      if (!store) {
+        const y = String(Math.max(new Date().getFullYear(), Number(FIRST_YEAR)));
         data = { sections: [], goals: [], vision: [], profile: {} };
+        store = { current: y, years: { [y]: data } };
         renderChips();
         document.getElementById("welcomeOverlay").classList.add("open");
       }

@@ -15,6 +15,7 @@ Página para organizar tus metas del año por secciones, marcar las que cumples 
 - **Deshacer:** si eliminas algo por error, puedes recuperarlo desde el aviso que aparece abajo.
 - **Exportar PDF:** guarda tu tablero como PDF para imprimirlo o compartirlo.
 - **Filtros:** ver todas, solo pendientes o solo cumplidas.
+- **Años:** en la barra lateral cambias entre 2026, 2027… Al agregar un año nuevo se crea con las mismas secciones del año que estás viendo, listo para llenar.
 - Funciona en computadora y celular, con modo oscuro automático.
 
 ## Dónde se guardan tus datos
