@@ -1,6 +1,7 @@
 # <img src="icon.svg" width="32" height="32" alt="" align="top" /> Goals
 
-Página para organizar tus metas del año por secciones, marcar las que cumples y armar tu vision board. Tiene un estilo limpio, inspirado en Notion.
+Página para organizar tus metas del año por secciones, marcar las que cumples y armar tu vision board. Tiene un estilo limpio
+.
 
 **Pruébala aquí:** https://niurkavane11.github.io/mis-metas/
 
