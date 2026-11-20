@@ -805,6 +805,30 @@
         }
       }
 
+      .card.copied {
+        box-shadow: inset 0 0 0 2px var(--primary);
+      }
+
+      .card.copied .icon-btn.copy {
+        opacity: 1;
+        color: var(--primary);
+      }
+
+      .col-paste {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px dashed var(--primary);
+        background: transparent;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-top: 6px;
+      }
+
       .col-add {
         width: 100%;
         display: flex;
@@ -1473,6 +1497,10 @@
       <symbol id="i-plus" viewBox="0 0 24 24">
         <path d="M12 5v14M5 12h14" />
       </symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24">
+        <rect x="9" y="9" width="12" height="12" rx="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </symbol>
       <symbol id="i-edit" viewBox="0 0 24 24">
         <path d="M12 20h9" />
         <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
@@ -2095,6 +2123,7 @@
             <div class="col-bar" title="${t.pct}% cumplido"><div class="fill" style="width:${t.pct}%"></div></div>
             ${body}
             <button class="col-add" onclick="openGoalModal(null, '${s.id}')">${icon("plus")}Nueva meta</button>
+            ${clip.length ? `<button class="col-paste" onclick="pasteGoals('${s.id}')">${icon("copy")}Pegar ${clip.length === 1 ? "1 meta" : clip.length + " metas"} aquí</button>` : ""}
           </section>`;
         });
 
@@ -2121,14 +2150,56 @@
           );
         const label = g.done ? "Marcar como pendiente" : "Marcar como cumplida";
 
-        return `<div class="card ${g.done ? "done" : ""}">
+        const copied = clip.some((c) => c.id === g.id);
+        return `<div class="card ${g.done ? "done" : ""} ${copied ? "copied" : ""}">
           <button class="todo ${g.done ? "done" : ""}" aria-label="${label}" title="${label}" onclick="toggleGoal('${g.id}')">${icon("check")}</button>
           <div class="card-body" role="button" tabindex="0" title="Editar meta" onclick="openGoalModal('${g.id}')" onkeydown="if(event.key==='Enter')openGoalModal('${g.id}')">
             <div class="card-text">${esc(g.text)}</div>
             ${props.length ? `<div class="props">${props.join("")}</div>` : ""}
           </div>
+          <button class="icon-btn copy" title="${copied ? "Quitar de copiadas" : "Copiar"}" aria-label="Copiar meta" onclick="toggleCopy('${g.id}')">${icon("copy")}</button>
           <button class="icon-btn" title="Eliminar" aria-label="Eliminar meta" onclick="removeGoal('${g.id}')">${icon("trash")}</button>
         </div>`;
+      }
+
+      /* ---------- Copiar y pegar metas (entre secciones o años) ---------- */
+      const CLIP_KEY = "goals-clipboard";
+      let clip = readJson(CLIP_KEY) || [];
+      const saveClip = () => {
+        try {
+          localStorage.setItem(CLIP_KEY, JSON.stringify(clip));
+        } catch (e) {}
+      };
+
+      function toggleCopy(id) {
+        const i = clip.findIndex((c) => c.id === id);
+        if (i >= 0) clip.splice(i, 1);
+        else {
+          const g = data.goals.find((x) => x.id === id);
+          if (!g) return;
+          clip.push({ id: g.id, text: g.text, note: g.note || "", due: g.due || "" });
+        }
+        saveClip();
+        render();
+        if (clip.length)
+          showToast(
+            `${clip.length === 1 ? "1 meta copiada" : clip.length + " metas copiadas"}. Usa “Pegar” en la sección que quieras.`,
+            false,
+          );
+        else hideToast();
+      }
+
+      function pasteGoals(sectionId) {
+        if (!clip.length) return;
+        const n = clip.length;
+        clip.forEach((c) =>
+          data.goals.push(newGoal(sectionId, c.text, c.note, { due: c.due })),
+        );
+        clip = [];
+        saveClip();
+        save();
+        render();
+        showToast(n === 1 ? "Meta pegada" : n + " metas pegadas", false);
       }
 
       function renderManager() {
