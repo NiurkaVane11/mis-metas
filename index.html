@@ -2583,8 +2583,7 @@
 
       const setSync = (t) => (document.getElementById("syncState").textContent = t);
       const isDirty = () =>
-        localStorage.getItem(DIRTY_KEY) === "1" ||
-        (!localStorage.getItem(SYNCED_KEY) && !!readJson(STORAGE_KEY));
+        !!localStorage.getItem(SYNCED_KEY) && localStorage.getItem(DIRTY_KEY) === "1";
 
       function cloudChanged() {
         localStorage.setItem(DIRTY_KEY, "1");
@@ -2599,6 +2598,14 @@
         pushTimer = null;
         if (!user || !store || pushing) return;
         pushing = true;
+        // Si la nube cambió desde la última vez que este dispositivo sincronizó, no la pisa: trae lo de la nube
+        const { data: cur, error: e0 } = await sb.from("app_data").select("data, updated_at").eq("app", APP).maybeSingle();
+        if (e0) { pushing = false; return setSync("Sin conexión. Se subirá luego."); }
+        if (cur && cur.updated_at !== localStorage.getItem(SYNCED_KEY)) {
+          pushing = false;
+          try { localStorage.setItem(STORAGE_KEY + "-respaldo", JSON.stringify(store)); } catch (e) {}
+          return applyRemote(cur);
+        }
         const sent = JSON.stringify(store);
         const { data: row, error } = await sb
           .from("app_data")
@@ -2653,17 +2660,10 @@
         if (error) return setSync("Sin conexión");
         const hasLocal = !!readJson(STORAGE_KEY);
         if (!row) return hasLocal ? push() : setSync("Guardado en la nube");
-        if (
-          isDirty() &&
-          hasLocal &&
-          JSON.stringify(store) !== JSON.stringify(row.data) &&
-          confirm(
-            "Este dispositivo tiene metas distintas a las de tu cuenta.\n\n" +
-              "Aceptar: subir las de este dispositivo y reemplazar las de la cuenta.\n" +
-              "Cancelar: usar las de tu cuenta.",
-          )
-        )
-          return push();
+        if (isDirty() && row.updated_at === localStorage.getItem(SYNCED_KEY)) return push();
+        if (hasLocal) {
+          try { localStorage.setItem(STORAGE_KEY + "-respaldo", localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+        }
         applyRemote(row);
       }
 
